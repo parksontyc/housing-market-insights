@@ -86,7 +86,7 @@ PRE_SALE_URLS_FRAGMENTS = {
 
 PRE_SALE_COLUMN_NAME = {
         "AA11": "使用分區",
-        # "AA12": "",
+        "AA12": "非都土地分區編定",
         "a": "坐落街道",
         "b": "建物型態",
         "bn": "社區名稱",

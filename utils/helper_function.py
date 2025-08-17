@@ -240,3 +240,46 @@ def convert_mixed_date_columns(df, roc_cols=[], ad_cols=[], roc_slash_cols=[]):
     return df
 
 
+
+#=== 02_plvr_ps_transaction ===
+# 制作小型測試資料
+def sample_csv_to_target_size(
+    input_path,
+    output_path="sample_10mb.csv",
+    target_mb=10,
+    encoding="utf-8-sig",
+    random_state=42
+):
+    """
+    從大型 CSV 中抽樣，產出接近指定 MB 大小的 CSV 檔案。
+    
+    Parameters:
+    - input_path: 原始 CSV 路徑
+    - output_path: 抽樣後儲存的 CSV 路徑
+    - target_mb: 目標大小（以 MB 為單位，預設 10MB）
+    - encoding: 輸出檔案的編碼（預設為 utf-8-sig）
+    - random_state: 抽樣亂數種子（確保可重現）
+    """
+    # 讀取原始 CSV
+    print(f" 讀取檔案中：{input_path}")
+    df = pd.read_csv(input_path)
+
+    # 計算平均每列大小
+    avg_row_size = df.memory_usage(deep=True).sum() / len(df)
+    target_bytes = target_mb * 1024 * 1024
+    target_rows = int(target_bytes / avg_row_size)
+
+    print(f" 平均每列大小：約 {avg_row_size:.2f} bytes")
+    print(f" 目標大小：{target_mb}MB ≈ {target_rows} 筆資料")
+
+    # 隨機抽樣
+    sampled_df = df.sample(n=target_rows, random_state=random_state)
+
+    # 儲存結果
+    sampled_df.to_csv(output_path, index=False, encoding=encoding)
+    actual_size = os.path.getsize(output_path) / (1024 * 1024)
+
+    print(f" 已儲存檔案：{output_path}，實際大小約 {actual_size:.2f} MB")
+    return sampled_df
+
+
